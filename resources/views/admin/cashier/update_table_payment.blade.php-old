@@ -1,0 +1,735 @@
+@extends('admin.layouts.layout')
+@section('title','TableOrderCheckout')
+
+@section('content')
+
+<section class="content-header">
+    <div class="container-fluid">
+        @if(Session::has('error_message'))
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error:</strong> {{Session::get('error_message')}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
+        @if(Session::has('success_message'))
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <strong>Success:</strong> {{Session::get('success_message')}}
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+            </button>
+        </div>
+        @endif
+
+
+        <div class="row mb-2">
+
+            <div class="col-sm-6">
+                <ol class="breadcrumb float-sm-right">
+                    <li class="breadcrumb-item"><a href="#">Dashboard</a></li>
+                    <li class="breadcrumb-item active">View Bar Table Order Checkout </li>
+                </ol>
+            </div>
+        </div>
+    </div><!-- /.container-fluid -->
+</section>
+<section class="content">
+    <div class="container-fluid">
+        <div class="row">
+            <div class="col-md-12">
+                <div class="card card-primary card-outline">
+                    <div class="card-header bg-info  ">
+                        <div class="card-title " style="display:inline-flex; float:right">
+                            <div type="button" class="btn btn-block btn-danger btn-flat ">{{$orderes['tables']->table_name}}--{{$orderes['tables']->table_type}}</div> &nbsp;
+
+                        </div>
+                        <div class="card-title  " style="display:inline-flex; float:center">
+                            <div type="button" class="btn btn-block btn-danger btn-flat ">{{$orderes['staffs']->name}}</div> &nbsp;
+
+                        </div>
+                        <div class="card-title " style="display:inline-flex; float:left">
+                            <div type="button" class="btn btn-block btn-danger btn-flat ">{{$orderes->order_no}}</div> &nbsp;
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+        <!-- /.col -->
+    </div>
+    <!-- /.row -->
+
+    <!-- /.container-fluid -->
+</section>
+<!-- Main content -->
+<section class="content">
+    <div class="container-fluid">
+      <div class="row">
+        <div class="col-12">
+          
+
+
+          <!-- Main content -->
+          <div class="invoice p-3 mb-3">
+            <!-- title row -->
+            <!-- info row -->
+         
+            <!-- /.row -->
+            
+               
+            <!-- Table row -->
+            <div class="row">
+              <div class="col-12 table-responsive">
+                <table class="table table-striped">
+                  <thead>
+                  <tr>
+                    <th>S.No.</th>
+                    <th>Product Name</th>
+                    <th>Qty</th>
+                    <th>Price</th>
+                    <th>Subtotal</th>
+                  </tr>
+                  </thead>
+                  <tbody>
+                      
+                    @foreach ($ordereitemlist as $index=>$itemList )
+                    <tr>
+                    <td>{{ $index+1 }}</td>
+                    <td>{{ $itemList['menuitem']['menu_item_name'] }}<br>
+                        @if($itemList['extraItemPrice']!=Null)
+                       <small class="text-danger"> Extra:-{{ $itemList['extraitemadd']['extra_menu'] }}</small>
+                       @endif
+                    </td>
+                    <td>{{ $itemList['item_qty'] }}</td>
+                    <td>
+                        {{ $itemList['menuitem']['menu_item_price'] }}<br>
+                        @if($itemList['extraItemPrice']!=Null)
+                        <small class="badge badge-info"> ExtraItemPrice:-   {{ $itemList['extraItemPrice'] }}</small>
+                        @endif
+                    </td>
+                    <td>
+                      {{$itemList['amount']}}
+                    </td>
+                  </tr>
+                    @endforeach
+                    
+                  
+                  </tbody>
+                </table>
+              </div>
+              <!-- /.col -->
+            </div>
+            <!-- /.row -->
+
+            <div class="row">
+              <!-- accepted payments column -->
+              <div class="col-6">
+                
+              </div>
+              <!-- /.col -->
+              <div class="col-6">
+                
+
+                <div class="table-responsive">
+                  <table class="table">
+                    <tr>
+                      <th style="width:50%">Subtotal:</th>
+                      <td>{{ $orderes['sub_total'] }}</td>
+                    </tr>
+                    @if($orderes['coupon_per']>0)
+                    <tr>
+                        <th style="width:50%">Discount:</th>
+                        <td>{{ $orderes['coupon_per'] }}%</td>
+                      </tr>
+                      <tr>
+                        <th style="width:50%">AfterDiscountSubtotal:</th>
+                        <td>{{ $orderes['subtotalwithoffer'] }}</td>
+                      </tr>
+                      @endif
+                    @foreach ($gettaxinst as $usetaxlist )
+                    <tr>
+                        <th style="width:50%">{{ $usetaxlist['tax_name'] }}({{ $usetaxlist['tax_percentage'] }}%):</th>
+                        <td>{{ $usetaxlist['tax_amount'] }}</td>
+                      </tr>
+                    @endforeach
+                    <tr>
+                      <th>Grand Total</th>
+                      <td>{{ $orderes['grand_total'] }}</td>
+                      
+                    </tr>
+                  </table>
+                </div>
+              </div>
+              <a style="max-width: 250px; float:right; display:inline-block;" href="{{ url('admin/table-orderSlip/'.$orderes['order_no'] ) }}" rel="noopener" target="_blank" class="btn btn-default"><i class="fas fa-print"></i> Print</a>&nbsp;
+              <a style="max-width: 250px; float:right; display:inline-block;" href="{{ url('admin/View-order-details/'.$orderes['order_no'] ) }}"  class="btn btn-info"> Update Bill</a>&nbsp;
+
+              <!-- /.col -->
+            </div>
+
+            <!-- /.row -->
+
+            <!-- this row will not appear when printing -->
+           
+          </div>
+          <!-- /.invoice -->
+        </div><!-- /.col -->
+      </div><!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+<!-- /.content -->
+
+<section class="content" >
+    <div class="container-fluid">
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-12">
+                <!-- jquery validation -->
+                <div class="card card-primary">
+                    <div class="card-header">
+                        <h3 class="card-title">Fill Form For Order Completed</h3>
+                    </div>
+                    <!-- /.card-header -->
+                    <!-- form start -->
+                    <form action="{{ url('admin/tableorder-checkout/'.$orderes['order_no']) }}">
+
+                        @csrf
+
+                        <input type="hidden" name="orderid" class="order_id" value="{{ $orderes['order_no'] }}">
+                        @php
+                            $grandtotal = $orderes['grand_total'];
+                            $gandtotalroundoff = round($grandtotal);
+                        @endphp
+                        <input class="form-control grand_total" type="hidden" name="grand_total" id="grand_total" value="{{ $gandtotalroundoff }}">
+                        <div class="card-body">
+                            @if(Session::has('error_message'))
+                            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+                                <strong>Error:</strong> {{Session::get('error_message')}}
+                                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                                    <span aria-hidden="true">&times;</span>
+                                </button>
+                            </div>
+                            @endif
+
+
+                            <div class="form-group">
+                                <label>Mobile No</label>
+                                <input class="form-control mobile_no @error('mobile_no') is-invalid @enderror" id="mobile_no"  type="number" name="mobile_no" >
+                                @error('mobile_no')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                               <div class="form-group">
+                                <label>Enter By Waiter PayAble Mode</label>
+                                <input class="form-control "  type="text" value="{{ $orderes['payableamt'] }}" readonly> 
+                            </div>
+                            @if($orderes['payableamt']!="General")
+                            <div class="form-group">
+                                <label>Enter By Waiter NC Remark</label>
+                                <input class="form-control "  type="text" value="{{ $orderes['nc_remark'] }}" readonly> 
+                            </div>
+                            @endif
+                            <div class="form-group">
+                                <label for="payableamt">PayAble Mode</label>
+                                <select class="form-control payableamt @error('payableamt') is-invalid @enderror" id="payableamt" name="payableamt" required>
+                                    <option value="">Select PayAble Mode</option>
+                                    <option id="General" value="General">General</option>
+                                    <option id="NC" value="NC">NC</option>
+                                </select>
+                                @error('payableamt')
+                                <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+
+                            <div class="col-md-6" id="nc_remark">
+                            <div class="form-group">
+                                <label for="exampleInputEmail1">NC Remark</label>
+                                <input type="text" class="form-control @error('nc_remark') is-invalid @enderror" id="" placeholder="Enter NC Remark" name="nc_remark" 
+                                @if(!empty($orderes['nc_remark'])) value="{{ $orderes['nc_remark'] }}"  @else value="{{ old('nc_remark') }}" @endif>
+                                @error('nc_remark')
+                                    <div class="alert alert-danger">{{ $message }}</div>
+                                @enderror
+                            </div>
+                            </div>
+
+
+                        
+                          
+                           
+                          
+                           
+                            <div id="genraldiv">
+
+                                <div class="form-group">
+                                    <label for="payment_mode">Payment Mode</label>
+                                    <select
+                                        class="form-control payment_mode @error('payment_mode') is-invalid @enderror"
+                                        id="payment_mode" name="payment_mode">
+                                        <option value="">Select Payment Mode</option>
+                                        <option id="Cash" value="Cash">Cash</option>
+                                        <!--<option id="Online" value="Online">Online</option>-->
+                                        <option id="Card Swip" value="Card Swip">Card Swip</option>
+                                        <option id="QRCodeWithSlip" value="QRCodeWithSlip">QRCodeWithSlip</option>
+                                          <!--<option id="Partial-Payment" value="Partial-Payment">Partial-Payment</option>-->
+
+
+                                    </select>
+                                       @error('payment_mode')
+                                        <div class="alert alert-danger">{{ $message }}</div>
+                                    @enderror
+                                    <div id="cashchangediv">
+                                        <label for="Taken Cash Amount">Taken Cash Amount</label>
+                                        <input type="text" name="taken_cash_amount" id="cash_amount"
+                                            placeholder="Taken Cash Amount"><br>
+
+                                        <label for="Given Change Amount">Given Change Amount</label>
+                                        <input type="text" name="given_change_amount" id="change_amount"
+                                            placeholder="Given Change Amount">
+                                    </div>
+                                      <div id="cashtakediv">
+                                            <label for="Taken Cash Amount">Taken Cash Amount</label>
+                                            <input type="text" name="cash_amountparitial" id="cash_amountparitial"
+                                                placeholder="Taken Cash Amount" class="cash_amountparitial"><br>
+                                        </div>
+                                        <div>
+                                            <div id="partial_other_valuediv">
+                                        <label >Partial Other Value</label>
+                                        <input type="text" name="partial_other_value" id="partial_other_value" readonly class="partial_other_value">
+                                        </div>
+                                         <div id="otherpartialpayment">
+                                            <label for="payment_mode">Other Payment Mode</label>
+                                            <select
+                                                class="form-control payment_modepartial @error('payment_mode') is-invalid @enderror"
+                                                id="payment_modepartial" name="payment_modepartial">
+                                                <option value="">Select Payment Mode</option>
+
+                                                {{-- <option id="Onlinepartial" value="Onlinepartial">Online</option> --}}
+                                                <option id="CardSwippartial" value="CardSwippartial">Card Swip</option>
+                                                <option id="QRCodeWithSlippartial" value="QRCodeWithSlippartial">QRCodeWithSlip
+                                                </option>
+                                            </select>
+                                        </div>
+                                 
+                                </div>
+
+                            </div>
+
+
+                        </div>
+                        <!-- /.card-body -->
+                        <div class="card-footer">
+                            <button type="submit" id="cash-btn" class="btn btn-primary">Submit</button>
+                            {{-- @if($orderes['payableamt']=="NC")
+                            <button type="submit"  class="btn btn-primary">Submit</button>
+                       @endif --}}
+
+                            <button class="btn btn-primary  w-100 mt-3 razorpay-btn btn-submit"  style="border-radius:0px;" id="razorpay-btn" type="button" >Purchase</button>
+                            <button class="btn btn-primary  w-100 mt-3 razorpay-btn-partial btn-submit"
+                                    style="border-radius:0px;" id="razorpay-btnpartial" type="button">Purchase Partial</button>
+                        </div>
+                    </form>
+                </div>
+                <!-- /.card -->
+            </div>
+            <!--/.col (left) -->
+            <!-- right column -->
+            <div class="col-md-6">
+
+            </div>
+            <!--/.col (right) -->
+        </div>
+        <!-- /.row -->
+    </div><!-- /.container-fluid -->
+</section>
+@endsection
+@section('script')
+
+<script>  
+ 
+  $("#cash_amount").hide();
+  $("#change_amount").hide();
+  $('#razorpay-btn').hide();
+$('#razorpay-btnpartial').hide();
+  $('#partial_other_valuediv').hide()
+  $("#nc_remark").hide();
+  $("#genraldiv").hide();
+  $('#cash-btn').hide(); 
+  $("#cashchangediv").hide();
+  $('#razorpay-btn').hide();
+  
+   $("#otherpartialpayment").hide();
+        $("#cashtakediv").hide();
+    $(document).ready(function(){
+        $('#payableamt').on('change', function() {
+          if ( this.value == 'General')
+          {
+            $("#genraldiv").show();
+            $("#nc_remark").hide();
+            $("#payment_mode").on("change", function() {
+      // alert("payment_mode");
+        if (this.value == "Cash") {
+            $("#cash_amount").show();
+            $("#change_amount").show();
+            $('#cash-btn').show(); 
+            $('#razorpay-btn').hide();
+            $("#cashchangediv").show();
+        }else if (this.value == "Card Swip"||this.value == "QRCodeWithSlip") {
+            $("#cash_amount").hide();
+            $("#change_amount").hide();
+            $('#cash-btn').show(); 
+            $('#razorpay-btn').hide();
+            $("#cashchangediv").hide();
+        }else if (this.value == "Partial-Payment") {
+                            $("#cashtakediv").show();
+                            $("#cash_amount").hide();
+                            $("#change_amount").hide();
+                            $("#otherpartialpayment").show();
+                            $('#cash-btn').hide();
+                            $('#razorpay-btn').hide();
+                            $("#cashchangediv").hide();
+
+                        }else if (this.value == "Online")
+                        {
+                            $("#cash_amount").hide();
+                            $("#change_amount").hide();
+                            $('#cash-btn').hide();
+                            $('#razorpay-btn').show();
+                            $("#cashchangediv").hide();
+                            $("#otherpartialpayment").hide();
+                        }
+         else {
+            // $("#cash_amount").hide();
+            // $("#change_amount").hide();
+            // $('#cash-btn').hide(); 
+            // $('#razorpay-btn').show();
+            // $("#cashchangediv").hide();
+        }
+    });
+  
+    $("#cash_amount").keyup(function(){
+      var cash_amount = $("#cash_amount").val();
+      // alert(cash_amount);
+      var grand_total = $("#grand_total").val();
+    
+      $("#change_amount").val(cash_amount - grand_total);
+  });
+          }
+          else
+          {
+           
+            $("#nc_remark").show();
+            $("#genraldiv").hide();
+            $('#cash-btn').show(); 
+           
+          }
+        });
+        
+        
+          $('#payment_modepartial').on('change', function() {
+            //   alert(this.value);
+               if(this.value =="CardSwippartial" || this.value == "QRCodeWithSlippartial"){
+               
+                    $('#cash-btn').show();
+                    $('#razorpay-btn').hide();
+                }
+                else 
+                {
+                    $('#razorpay-btn').show();
+                    $('#cash-btn').hide();
+                }
+            });
+
+            $("#cash_amountparitial").keyup(function(){
+                var cash_amountparitial = $("#cash_amountparitial").val();
+                // alert(cash_amountparitial);
+                var grand_total = $("#grand_total").val();
+                
+                $("#partial_other_value").val(grand_total-cash_amountparitial);
+            });
+    });
+</script>
+
+
+
+{{-- <script>
+      
+    $(document).ready(function() {
+    
+    $("#cash_amount").hide();
+    $("#change_amount").hide();
+    $("#hideforNC").hide();
+    $("#cashchangediv").hide();
+  
+    $('#cash-btn').hide(); 
+    $('#razorpay-btn').hide();
+    $("#payableamt").on("change", function() {
+        if (this.value == "General") {
+            $("#hideforNC").show();
+        }else{
+            $('#hideforNC').hide();
+            $('#cash-btn').show();
+        }
+    });
+
+    $("#payment_mode").on("change", function() {
+      // alert("payment_mode");
+        if (this.value == "Cash") {
+            $("#cash_amount").show();
+            $("#change_amount").show();
+            $('#cash-btn').show(); 
+            $('#razorpay-btn').hide();
+            $("#cashchangediv").show();
+        }else if (this.value == "Card Swip"||this.value == "QRCodeWithSlip") {
+            $("#cash_amount").hide();
+            $("#change_amount").hide();
+            $('#cash-btn').show(); 
+            $('#razorpay-btn').hide();
+            $("#cashchangediv").hide();
+        }
+         else {
+            $("#cash_amount").hide();
+            $("#change_amount").hide();
+            $('#cash-btn').hide(); 
+            $('#razorpay-btn').show();
+            $("#cashchangediv").hide();
+        }
+    });
+  
+    $("#cash_amount").keyup(function(){
+      var cash_amount = $("#cash_amount").val();
+      // alert(cash_amount);
+      var grand_total = $("#grand_total").val();
+    
+      $("#change_amount").val(cash_amount - grand_total);
+  });
+  
+  
+  });
+  </script> --}}
+  
+  <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+  
+  <script>
+  
+      $(document).ready(function() {
+       
+          // rozarpay jquery---
+          $('.razorpay-btn').click(function(e) {
+              e.preventDefault();
+              var grand_total = $('.grand_total').val();
+             
+              var order_id = $('.order_id').val();
+              
+                 var mobile_no = $('.mobile_no').val();
+  
+             
+             
+                  var data = {
+                      'grand_total': grand_total,
+                      'order_id': order_id,
+                       'mobile_no':mobile_no,
+                      
+                       }
+  
+                  $.ajaxSetup({
+                      headers: {
+                          'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                      }
+                  });
+                  $.ajax({
+  
+                      method: "post",
+                      url: "{{ url('/') }}/admin/proceed-to-pay-tableorder",
+                      data: data,
+                      success: function(response) {
+                          // console.log(response.grand_total);
+                          var options = {
+                              "key": "rzp_test_T6cYO2ODoHQ6A9", // Enter the Key ID generated from the Dashboard
+                              // "amount": 1*100 , // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                               "amount":response.grand_total*100 , // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                              "currency": "INR",
+                              "name": "DunkalBevarage",                     
+                              "description": "Thank For chooseing us",
+                              "image": "https://example.com/your_logo",
+                              // "order_id": "order_IluGWxBm9U8zJ8", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                              "handler": function(razorpayresponse) {
+                                  // alert(razorpayresponse.razorpay_payment_id);
+                                  $.ajax({
+  
+                                      method: "post",
+                                      url: "{{ url('/') }}/admin/tableorder-checkout/"+ order_id,
+                                      data: {
+                                          'grand_total': response.grand_total,
+                                          'order_id': response.order_id,
+                                           'mobile_no': response.mobile_no,
+                                          'payment_mode': 'Paid by Razorpay',
+                                          'payment_id': razorpayresponse.razorpay_payment_id,
+                                               
+                                      },
+                                      success: function(
+                                          razorpaysuccesresponse) {
+                                            console.log(razorpaysuccesresponse);
+                                             var role = "{!!Auth::guard('admin')->user()->type == 'Cashier' !!}";
+                                            //  alert(role);
+                                            if(role){
+                                                 window.location.href = "{{ url('/') }}/admin/today-table-Completeorder/";
+                                            }else
+                                            {
+                                                 window.location.href = "{{ url('/') }}/admin/today-complete-orders/";
+                                            }
+                                           
+                                          swal(razorpaysuccesresponse
+                                                  .status)
+                                              .then((value) => {
+                                                  // window.location.reload();
+                                                //   window.location.href = "{{ url('/') }}/admin/today-complete-orders/";
+                                              });
+  
+  
+                                      }
+                                  });
+                              },
+                              "prefill": {
+                              //   "name": response.firstname + ' ' + response.lastname,
+                                  // "email": response.email,
+                                   "contact": response.mobile_no
+                               },
+  
+                              "theme": {
+                                  "color": "#3399cc"
+                              }
+                          };
+                          var rzp1 = new Razorpay(options);
+  
+  
+                          rzp1.open();
+                          e.preventDefault();
+  
+                          // alert(response.total_price);
+                      }
+  
+                  });
+              
+  
+  
+          }); //end razorpay---
+          
+          
+          
+            // rozarpay jquery partial payment---
+              $('.razorpay-btn-partial').click(function(e) {e.preventDefault();
+                var partial_other_value = $('.partial_other_value').val();
+                var cash_amountparitial = $('.cash_amountparitial').val();
+                var payment_mode = $('.payment_mode').val();
+                var grand_total = $('.grand_total').val();
+                var payableamt = $('.payableamt').val();
+                var payment_modepartial = $('.payment_modepartial').val();
+                var order_id = $('.order_id').val();
+                var mobile_no = $('.mobile_no').val();
+
+                var data = {
+                    'partial_other_value': partial_other_value,
+                    'cash_amountparitial': cash_amountparitial,
+                    'payableamt': payableamt,
+                    'payment_modepartial': payment_modepartial,
+                    'grand_total': grand_total,
+                    'payment_mode': payment_mode,
+                    'order_id': order_id,
+                    'mobile_no': mobile_no,
+
+                }
+
+                $.ajaxSetup({
+                    headers: {
+                        'X-CSRF-TOKEN': $('meta[name="csrf-token"]').attr('content')
+                    }
+                });
+                $.ajax({
+
+                    method: "post",
+                    url: "{{ url('/') }}/admin/proceed-to-pay-tableorderpartial",
+                    data: data,
+                    success: function(response) {
+                        console.log(response);
+                        var options = {
+                            "key": "rzp_test_T6cYO2ODoHQ6A9", // Enter the Key ID generated from the Dashboard
+                            // "amount": 1*100 , // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                            "amount": response.partial_other_value *
+                                100, // Amount is in currency subunits. Default currency is INR. Hence, 50000 refers to 50000 paise
+                            "currency": "INR",
+                            "name": "DunkalBevarage",
+                            "description": "Thank For chooseing us",
+                            "image": "https://example.com/your_logo",
+                            // "order_id": "order_IluGWxBm9U8zJ8", //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
+                            "handler": function(razorpayresponse) {
+                                alert(razorpayresponse);
+                                $.ajax({
+
+                                    method: "post",
+                                    url: "{{ url('/') }}/admin/tableorder-checkoutpartial/" +
+                                        order_id,
+                                    data: {
+                                        'cash_amountparitial': response.cash_amountparitial,
+                                        'mobile_no': response.mobile_no,
+                                        'order_id': response.order_id,
+                                        'partial_other_value': response.partial_other_value,
+                                        'payableamt': response.payableamt,
+                                        'grand_total': response.grand_total,
+
+                                        'payment_mode': response.payment_mode,
+                                        'payment_modepartial': response.payment_modepartial,
+                                       
+                                        'payment_idpartial': razorpayresponse.razorpay_payment_id,
+
+                                    },
+                                    success: function(
+                                        razorpaysuccesresponse) {
+                                        console.log(razorpaysuccesresponse);
+                                        window.location.href =
+                                            "{{ url('/') }}/admin/today-complete-orders/";
+                                        swal(razorpaysuccesresponse
+                                                .status)
+                                            .then((value) => {
+                                                // window.location.reload();
+                                                //   window.location.href = "{{ url('/') }}/admin/today-complete-orders/";
+                                            });
+
+
+                                    }
+                                });
+                            },
+                            "prefill": {
+                                //   "name": response.firstname + ' ' + response.lastname,
+                                // "email": response.email,
+                                "contact": response.mobile_no
+                            },
+
+                            "theme": {
+                                "color": "#3399cc"
+                            }
+                        };
+                        var rzp1 = new Razorpay(options);
+
+
+                        rzp1.open();
+                        e.preventDefault();
+
+                        // alert(response.total_price);
+                    }
+
+                });
+
+
+
+            }); //end razorpay---
+
+  
+          
+  
+      });
+  
+      
+  </script>
+
+@endsection
